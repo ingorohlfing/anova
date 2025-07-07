@@ -12,6 +12,8 @@ ui <- fluidPage(
       sliderInput("val2", "A2", value = 2, min = 1, max = 10, step = 0.1),
       sliderInput("val4", "B1", value = 3, min = 1, max = 10, step = 0.1),
       sliderInput("val5", "B2", value = 4, min = 1, max = 10, step = 0.1),
+      sliderInput("val7", "C1", value = 5, min = 1, max = 10, step = 0.1),
+      sliderInput("val8", "C2", value = 6, min = 1, max = 10, step = 0.1),
       width = 3,
     # add a line break in sidebarpanel
     tags$br(),
@@ -30,8 +32,8 @@ ui <- fluidPage(
 server <- function(input, output) {
   output$anovaPlot <- renderPlot({
     df <- data.frame(
-      case_id = c(1, 2, 4, 5),
-      value = c(input$val1, input$val2, input$val4, input$val5)
+      case_id = c(1, 2, 4, 5, 7, 8),
+      value = c(input$val1, input$val2, input$val4, input$val5, input$val7, input$val8)
     )
     df$mean <- mean(df$value)
 
@@ -41,20 +43,24 @@ server <- function(input, output) {
     # Calculate group means for A and B
     group_A_mean <- mean(c(input$val1, input$val2))
     group_B_mean <- mean(c(input$val4, input$val5))
+    group_C_mean <- mean(c(input$val7, input$val8))
     overall_mean <- mean(df$value)
 
     # Between-groups variance
-    between_var <- mean(c((group_A_mean - overall_mean)^2, (group_B_mean - overall_mean)^2))
+    between_var <- (2 *(group_A_mean - overall_mean)^2 +
+                      2 *(group_B_mean - overall_mean)^2 +
+                      2 * (group_C_mean - overall_mean)^2) / 2
 
     # Within-groups variance
-    within_A <- mean(c((input$val1 - group_A_mean)^2, (input$val2 - group_A_mean)^2))
-    within_B <- mean(c((input$val4 - group_B_mean)^2, (input$val5 - group_B_mean)^2))
-    within_var <- mean(c(within_A, within_B))
+    within_A <- sum(c((input$val1 - group_A_mean)^2, (input$val2 - group_A_mean)^2))
+    within_B <- sum(c((input$val4 - group_B_mean)^2, (input$val5 - group_B_mean)^2))
+    within_C <- sum(c((input$val7 - group_C_mean)^2, (input$val8 - group_C_mean)^2))
+    within_var <- sum(c(within_A, within_B, within_C))/ 3
     F_score <- between_var / within_var
 
     ggplot(data = df, aes(x = case_id, y = value)) +
       geom_point() +
-      geom_segment(aes(x = 3 - 0.5, xend = 3 + 0.5,
+      geom_segment(aes(x = 4.5 - 0.5, xend = 4.5 + 0.5,
                        y = overall_mean, yend = overall_mean)) +
       geom_segment(aes(x = 1.25, xend = 1.75,
                        y = group_A_mean, yend = group_A_mean),
@@ -62,8 +68,11 @@ server <- function(input, output) {
       geom_segment(aes(x = 4.25, xend = 4.75,
                        y = group_B_mean, yend = group_B_mean),
                    color = "orange", size = 1) +
+      geom_segment(aes(x = 7.25, xend = 7.75,
+                       y = group_C_mean, yend = group_C_mean),
+                   color = "green", size = 1) +
       scale_x_continuous(breaks = df$case_id,
-                         labels = c("A1", "A2", "B1", "B2")) +
+                         labels = c("A1", "A2", "B1", "B2", "C1", "C2")) +
       scale_y_continuous(breaks = seq(1, 10, by = 1),
                          limits = c(1, 10)) +
       labs(x = "Beobachtungen", y = "Variablenwert",
