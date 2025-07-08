@@ -1,0 +1,12 @@
+name: anova_for_means
+title: anova_for_means
+username: ingorohlfing
+account: ingorohlfing
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 15046215
+bundleId: 10581195
+url: https://ingorohlfing.shinyapps.io/anova_for_means/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

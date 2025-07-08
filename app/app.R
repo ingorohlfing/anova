@@ -21,13 +21,11 @@ ui <- fluidPage(
       sliderInput("val5", "B2", value = 4, min = 1, max = 10, step = 0.1),
       sliderInput("val7", "C1", value = 5, min = 1, max = 10, step = 0.1),
       sliderInput("val8", "C2", value = 6, min = 1, max = 10, step = 0.1),
-      width = 3#,
-    # add a line break in sidebarpanel
-    #tags$br(),
-    # add text  in the sidebarpanel
-    #tags$p(HTML("Mögliche Werte für alle Fälle: <br>
-    #       Minimum: 1; Maximum: 10; Schrittweite: 0.1"),
-    #       width = 3)
+     # add a line break in sidebarpanel
+    tags$br(),
+    tags$p("Creator: Ingo Rohlfing",
+           tags$a(href = "https://github.com/ingorohlfing", "(https://github.com/ingorohlfing)", target = "_blank")),
+           width = 3
     ),
     mainPanel(
       plotOutput("anovaPlot"),
